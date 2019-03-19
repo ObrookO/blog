@@ -1,0 +1,40 @@
+<!-- content start -->
+    <div class="am-u-md-8 am-u-sm-12">
+
+        {{ range $index, $ele := .Articles }}
+        <article class="am-g blog-entry-article">
+            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-img">
+                <img src="/myi/f10.jpg" alt="" class="am-u-sm-12">
+            </div>
+            <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text">
+                <h1><a href="/article/{{ $ele.Id }}">{{ $ele.Title }}</a></h1>
+                <p>
+                    <span style="cursor:pointer;margin-right: 10px" onclick="favor('{{ $ele.Id }}', this)">
+                        <i class="am-icon am-icon-thumbs-o-up {{ if $ele.IsFavored }} favored {{ end }}"></i>
+                        <span class="favor-num">{{ $ele.FavorNum }}</span>
+                    </span>
+                    <span style="cursor:pointer;margin-right: 10px">
+                        <a href="/article/{{ $ele.Id }}#comment">
+                            <i class="am-icon am-icon-comment-o"></i>
+                        </a>
+                        <span class="comment-num">0</span>
+                    </span>
+                    <span><i class="am-icon am-icon-clock-o"></i> {{ formatDate $ele.CreatedAt }}</span>
+                </p>
+                <p>{{ $ele.Desc }}</p>
+            </div>
+        </article>
+        {{ end }}
+
+        {{ if gt .Paginator.PageNums 1 }}
+        <ul class="am-pagination">
+            {{ range $index, $page := .Paginator.Pages}}
+            <li {{ if $.Paginator.IsActive $page }} class="am-active" {{ end }}>
+                <a href="{{ $.Paginator.PageLink $page }}">{{ $page }}</a>
+            </li>
+            {{end}}
+        </ul>
+        {{ end }}
+
+    </div>
+<!-- content end -->

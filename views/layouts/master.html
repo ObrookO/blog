@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Gentle、L的博客</title>
+    <meta name="renderer" content="webkit">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/mycss/amazeui.min.css">
+    <link rel="stylesheet" href="/mycss/app.css">
+
+    {{ .Style }}
+</head>
+
+<body id="blog">
+
+<header class="am-g am-g-fixed blog-fixed blog-text-center blog-header">
+    <div class="am-u-sm-8 am-u-sm-centered">
+        <h2 class="am-hide-sm-only">欢迎来到Genlte、L的博客</h2>
+    </div>
+</header>
+<hr>
+
+<!-- nav start -->
+<nav class="am-g am-g-fixed blog-fixed blog-nav">
+    <div class="am-collapse am-topbar-collapse" id="blog-collapse">
+        <ul class="am-nav am-nav-pills am-topbar-nav">
+            <li><a href='{{ urlfor "IndexController.Get" }}'>首页</a></li>
+            <li class="am-dropdown" data-am-dropdown>
+                <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                    技术杂谈
+                    <span class="am-icon-caret-down"></span>
+                </a>
+                <ul class="am-dropdown-content">
+                    {{ range $index, $ele := .Categories }}
+                    <li><a href="/cate/{{ $ele.Id }}">{{ $ele.Name }}</a></li>
+                    {{ end }}
+                </ul>
+            </li>
+            <li><a href="http://chat.gentleli.cn" target="_blank">聊天室</a></li>
+            <li><a href="">NBA</a></li>
+            <li><a href="">给我留言</a></li>
+        </ul>
+        <div class="am-topbar-right">
+            <!-- 未登录显示登录按钮 -->
+            {{ if .username }}
+            <!-- 登录成功后显示用户名 -->
+            <a class="am-btn am-btn-primary am-topbar-btn am-btn-sm" href="javascript:;"><i class="am-icon am-icon-user"></i> {{ .username }}</a>
+            {{ else }}
+            <a class="am-btn am-btn-primary am-topbar-btn am-btn-sm" href="/login">登录</a>
+            {{ end }}
+
+        </div>
+
+        <form class="am-topbar-form am-topbar-right am-form-inline" role="search">
+            <div class="am-form-group">
+                <input type="text" class="am-form-field am-input-sm" placeholder="搜索">
+            </div>
+        </form>
+    </div>
+</nav>
+<hr>
+<!-- nav end -->
+<div class="am-g am-g-fixed blog-fixed blog-content">
+    {{ .LayoutContent }}
+
+    <div class="am-u-md-4 am-u-sm-12 blog-sidebar">
+        <div class="blog-sidebar-widget blog-bor">
+            <h2 class="blog-text-center blog-title"><span>文章归档</span></h2>
+            <ul>
+                {{ range $index, $ele := .Archive }}
+                <li><a href="/date/{{ $ele.Value }}">{{ $ele.Date }}（{{ $ele.Sum }}）</a></li>
+                {{ end }}
+            </ul>
+        </div>
+        <div class="blog-clear-margin blog-sidebar-widget blog-bor am-g ">
+            <h2 class="blog-title"><span>标签云</span></h2>
+            <div class="am-u-sm-12 blog-clear-padding">
+                {{ range $index, $ele := .Tags }}
+                <a href="/tag/{{ $ele.Id }}" class="blog-tag">{{ $ele.Name }}</a>
+                {{ end }}
+            </div>
+        </div>
+        <div class="blog-sidebar-widget blog-bor">
+            <h2 class="blog-title"><span>猜你喜欢</span></h2>
+            <ul class="am-list">
+                {{ range $index, $ele := .Like }}
+                <li><a href="/article/{{ $ele.Id }}">{{ $ele.Title }}</a></li>
+                {{ end }}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer class="blog-footer">
+    <div class="blog-text-center">© 2019 Gentle、Li</div>
+    <div class="blog-text-center">本站仅供技术交流，请勿用于商业用途，有问题请联系 2819923882@qq.com</div>
+</footer>
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="/myjs/jquery.min.js"></script>
+<!--<![endif]-->
+
+<script src="/myjs/amazeui.min.js"></script>
+
+{{ .Script }}
+
+</body>
+</html>
