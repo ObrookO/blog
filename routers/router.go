@@ -18,6 +18,8 @@ func init() {
 	beego.Router("/tag/:tid([0-9]+)", &controllers.ArticleController{}, "get:GetArticlesByTag")
 	// 文章详情
 	beego.Router("/article/:aid([0-9]+)", &controllers.ArticleController{}, "get:ArticleInfo")
+	// 评论功能
+	beego.Router("/comment", &controllers.CommentController{}, "post:Comment")
 
 	beego.Router("/login", &controllers.AuthController{}, "get:Login;post:PostLogin")
 	beego.Router("/register", &controllers.AuthController{}, "get:Register;post:PostRegister")

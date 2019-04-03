@@ -16,10 +16,14 @@
                 // 判断是点赞还是取消点赞
                 if (data.message.indexOf('Favor') > -1) {
                     $(obj).find('i').addClass('favored');
-                    $(obj).find('.favor-num').text(eval($(obj).find('.favor-num').text() + 1))
+                    $(obj).find('.favor-num').text(eval($(obj).find('.favor-num').text()) + 1)
                 } else {
                     $(obj).find('i').removeClass('favored');
-                    $(obj).find('.favor-num').text(eval($(obj).find('.favor-num').text() - 1))
+                    if (eval($(obj).find('.favor-num').text()) - 1 < 0) {
+                        $(obj).find('.favor-num').text(0)
+                    } else {
+                        $(obj).find('.favor-num').text(eval($(obj).find('.favor-num').text()) - 1)
+                    }
                 }
             } else {
                 alert(data.message);

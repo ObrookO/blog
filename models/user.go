@@ -8,11 +8,11 @@ import (
 
 type Users struct {
 	Id        int
-	Username  string `form:"username"`
-	Password  string `form:"password"`
+	Username  string `form:"username" valid:"Required"`
+	Password  string `form:"password" valid:"Required"`
 	Avatar    string
 	Motto     string
-	CreatedAt string
+	CreatedAt int64
 }
 
 func init() {
@@ -31,4 +31,12 @@ func IsUserExists(where map[string]interface{}) bool {
 	}
 
 	return needle.Exist()
+}
+
+// 添加用户
+func AddUser(data *Users) (int64, error) {
+	o := orm.NewOrm()
+	o.Using("chat")
+
+	return o.Insert(data)
 }

@@ -17,7 +17,7 @@
                         <a href="/article/{{ $ele.Id }}#comment">
                             <i class="am-icon am-icon-comment-o"></i>
                         </a>
-                        <span class="comment-num">0</span>
+                        <span class="comment-num">{{ $ele.CommentNum }}</span>
                     </span>
                     <span><i class="am-icon am-icon-clock-o"></i> {{ formatDate $ele.CreatedAt }}</span>
                 </p>

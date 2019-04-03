@@ -2,22 +2,22 @@ package models
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/astaxie/beego/orm"
 )
 
 type Article struct {
-	Id        string `orm:"pk"`
-	Title     string
-	Cate      string
-	Tags      string
-	Desc      string
-	Content   string
-	FavorNum  int64
-	IsFavored bool `orm:"-"`
-	Status    string
-	CreatedAt string
+	Id         int
+	Title      string
+	Cate       string
+	Tags       string
+	Desc       string
+	Content    string
+	FavorNum   int
+	CommentNum int64 `orm:"-"`
+	IsFavored  bool  `orm:"-"`
+	Status     string
+	CreatedAt  string
 }
 
 type ArticleArchive struct {
@@ -79,6 +79,7 @@ func Archive() []ArticleArchive {
 
 	o.Raw("select date_format(created_at, '%Y年%m月') as date, date_format(created_at, '%Y/%m') as value, count(*) as sum from article group by value").QueryRows(&archive)
 	return archive
+
 }
 
 // 使用find_in_set查询文章
@@ -117,21 +118,21 @@ func GetOneArticle(where map[string]interface{}) (Article, error) {
 
 // 获取上一篇文章的id以及下一篇文章的id
 // aid int 当前文章的id
-func GetBeforeAndAfter(aid string) (int, int) {
+func GetBeforeAndAfter(aid int) (int, int) {
 	var article Article
 	var before, after int
 
 	o := orm.NewOrm()
 	// 获取上一篇文章的id
 	if err := o.QueryTable("article").Filter("id__lt", aid).OrderBy("-id").One(&article, "id"); err == nil {
-		before, _ = strconv.Atoi(article.Id)
+		before = article.Id
 	} else {
 		before = 0
 	}
 
 	// 获取下一篇文章的id
 	if err := o.QueryTable("article").Filter("id__gt", aid).OrderBy("id").One(&article, "id"); err == nil {
-		after, _ = strconv.Atoi(article.Id)
+		after = article.Id
 	} else {
 		after = 0
 	}

@@ -4,19 +4,7 @@ import (
 	"blog/models"
 	"strconv"
 
-	"github.com/go-redis/redis"
-
 	"github.com/beego/wetalk/modules/utils"
-
-	"github.com/astaxie/beego"
-)
-
-var (
-	Categories  []models.Category       // 栏目列表
-	Tags        []models.Tag            // 标签列表
-	Archive     []models.ArticleArchive // 文章归档
-	Like        []models.Article        // 猜你喜欢
-	RedisClient *redis.Client
 )
 
 type JsonResult struct {
@@ -26,7 +14,7 @@ type JsonResult struct {
 }
 
 type IndexController struct {
-	beego.Controller
+	BaseController
 }
 
 // 首页
@@ -50,8 +38,11 @@ func (index *IndexController) Get() {
 
 	// 获取文章的点赞数以及当前IP的点赞情况
 	for key, value := range articles {
-		articles[key].IsFavored = RedisClient.SIsMember("favor_"+value.Id, index.Ctx.Input.IP()).Val()
-		articles[key].FavorNum = RedisClient.SCard("favor_" + value.Id).Val()
+		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), index.Ctx.Input.IP()).Val()
+		articles[key].FavorNum = len(RedisClient.SMembers("favor_" + strconv.Itoa(value.Id)).Val())
+		where := make(map[string]interface{})
+		where["aid"] = value.Id
+		articles[key].CommentNum, _ = models.GetCommentsCount(where)
 	}
 
 	index.Data["username"] = index.GetSession("username")

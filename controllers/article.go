@@ -8,12 +8,10 @@ import (
 	"strings"
 
 	"github.com/beego/wetalk/modules/utils"
-
-	"github.com/astaxie/beego"
 )
 
 type ArticleController struct {
-	beego.Controller
+	BaseController
 }
 
 // 根据栏目id获取文章列表
@@ -44,8 +42,11 @@ func (a *ArticleController) GetAllArticlesByCate() {
 
 	// 获取文章的点赞数以及当前IP的点赞情况
 	for key, value := range articles {
-		articles[key].IsFavored = RedisClient.SIsMember("favor_"+value.Id, a.Ctx.Input.IP()).Val()
-		articles[key].FavorNum = RedisClient.SCard("favor_" + value.Id).Val()
+		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), a.Ctx.Input.IP()).Val()
+		articles[key].FavorNum = len(RedisClient.SMembers("favor_" + strconv.Itoa(value.Id)).Val())
+		where := make(map[string]interface{})
+		where["aid"] = value.Id
+		articles[key].CommentNum, _ = models.GetCommentsCount(where)
 	}
 
 	a.Data["username"] = a.GetSession("username")
@@ -96,8 +97,11 @@ func (a *ArticleController) GetArticlesByDate() {
 
 	// 获取文章的点赞数以及当前IP的点赞情况
 	for key, value := range articles {
-		articles[key].IsFavored = RedisClient.SIsMember("favor_"+value.Id, a.Ctx.Input.IP()).Val()
-		articles[key].FavorNum = RedisClient.SCard("favor_" + value.Id).Val()
+		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), a.Ctx.Input.IP()).Val()
+		articles[key].FavorNum = len(RedisClient.SMembers("favor_" + strconv.Itoa(value.Id)).Val())
+		where := make(map[string]interface{})
+		where["aid"] = value.Id
+		articles[key].CommentNum, _ = models.GetCommentsCount(where)
 	}
 
 	a.Data["username"] = a.GetSession("username")
@@ -133,8 +137,11 @@ func (a *ArticleController) GetArticlesByTag() {
 
 	// 获取文章的点赞数以及当前IP的点赞情况
 	for key, value := range articles {
-		articles[key].IsFavored = RedisClient.SIsMember("favor_"+value.Id, a.Ctx.Input.IP()).Val()
-		articles[key].FavorNum = RedisClient.SCard("favor_" + value.Id).Val()
+		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), a.Ctx.Input.IP()).Val()
+		articles[key].FavorNum = len(RedisClient.SMembers("favor_" + strconv.Itoa(value.Id)).Val())
+		where := make(map[string]interface{})
+		where["aid"] = value.Id
+		articles[key].CommentNum, _ = models.GetCommentsCount(where)
 	}
 
 	a.Data["username"] = a.GetSession("username")
@@ -155,7 +162,7 @@ func (a *ArticleController) ArticleInfo() {
 	a.LayoutSections["Script"] = "article/detail_script.html"
 
 	// 文章id
-	aid := a.GetString(":aid")
+	aid, err := strconv.Atoi(a.GetString(":aid"))
 	// 文章详情的查询条件
 	where := make(map[string]interface{})
 	where["id"] = aid
@@ -164,6 +171,12 @@ func (a *ArticleController) ArticleInfo() {
 	if err != nil {
 		a.Abort("404")
 	}
+
+	// 获取文章的所有评论
+	where2 := make(map[string]interface{})
+	where2["aid"] = aid
+
+	comments, _, err := models.GetComments(where2)
 
 	// 查询文章的标签
 	con := make(map[string]interface{})
@@ -177,6 +190,7 @@ func (a *ArticleController) ArticleInfo() {
 	a.Data["xsrf_token"] = a.XSRFToken()
 	a.Data["Categories"] = Categories
 	a.Data["Tags"] = Tags
+	a.Data["Comments"] = comments
 	a.Data["Archive"] = Archive
 	a.Data["Like"] = Like
 	a.Data["Info"] = info
