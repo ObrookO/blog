@@ -18,53 +18,64 @@ type IndexController struct {
 }
 
 // 首页
-func (index *IndexController) Get() {
-	index.Layout = "layouts/master.html"
-	index.TplName = "article/list.html"
-	index.LayoutSections = make(map[string]string)
-	index.LayoutSections["Style"] = "article/list_style.html"
-	index.LayoutSections["Script"] = "article/list_script.html"
+func (this *IndexController) Get() {
+	this.Layout = "layouts/master.html"
+	this.TplName = "article/list.html"
+	this.LayoutSections = make(map[string]string)
+	this.LayoutSections["Style"] = "article/list_style.html"
+	this.LayoutSections["Script"] = "article/list_script.html"
 
 	// 每页的数量
 	per := 10
 	// 当前页
-	page, _ := strconv.Atoi(index.Ctx.Input.Query("p"))
-	// 文章总数
-	total, _ := models.GetTotal(make(map[string]interface{}))
-	// 分页器
-	p := utils.NewPaginator(index.Ctx.Request, per, total)
+	page, _ := strconv.Atoi(this.Ctx.Input.Query("p"))
 
-	articles := models.GetArticlesLimit(make(map[string]interface{}), (page-1)*per, per)
+	where := make(map[string]interface{})
+	// 获取查询条件
+	search := this.GetString("search")
+	if len(search) > 0 {
+		where["title__icontains"] = search
+	}
+
+	// 文章总数
+	total, _ := models.GetTotal(where)
+	// 分页器
+	p := utils.NewPaginator(this.Ctx.Request, per, total)
+
+	articles := models.GetArticlesLimit(where, (page-1)*per, per)
 
 	// 获取文章的点赞数以及当前IP的点赞情况
 	for key, value := range articles {
-		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), index.Ctx.Input.IP()).Val()
+		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), this.Ctx.Input.IP()).Val()
 		articles[key].FavorNum = len(RedisClient.SMembers("favor_" + strconv.Itoa(value.Id)).Val())
 		where := make(map[string]interface{})
 		where["aid"] = value.Id
 		articles[key].CommentNum, _ = models.GetCommentsCount(where)
 	}
 
-	index.Data["username"] = index.GetSession("username")
-	index.Data["Articles"] = articles
-	index.Data["Categories"] = Categories
-	index.Data["Tags"] = Tags
-	index.Data["Archive"] = Archive
-	index.Data["Like"] = Like
-	index.Data["Paginator"] = p
+	this.Data["username"] = this.GetSession("username")
+	this.Data["Articles"] = articles
+	this.Data["Categories"] = Categories
+	this.Data["Tags"] = Tags
+	this.Data["NuggetTags"] = NuggetTags
+	this.Data["Archive"] = Archive
+	this.Data["Like"] = Like
+	this.Data["Paginator"] = p
+	this.Data["Page"] = page
+	this.Data["Search"] = search
 }
 
 // 点赞/取消点赞 功能
-func (index *IndexController) Favor() {
-	ip := index.Ctx.Input.IP()
-	aid := index.GetString(":aid")
+func (this *IndexController) Favor() {
+	ip := this.Ctx.Input.IP()
+	aid := this.GetString(":aid")
 
 	// 构建查询条件
 	where := make(map[string]interface{})
 	where["id"] = aid
 
 	if exist := models.IsArticleExists(where); !exist {
-		index.Data["json"] = &JsonResult{Code: 400, Message: "Article Does Not Exist"}
+		this.Data["json"] = &JsonResult{Code: 400, Message: "Article Does Not Exist"}
 	} else {
 		key := "favor_" + aid
 
@@ -72,13 +83,13 @@ func (index *IndexController) Favor() {
 		// 把文章id，ip记录到redis中
 		if isFavored := RedisClient.SIsMember(key, ip).Val(); isFavored {
 			RedisClient.SRem(key, ip)
-			index.Data["json"] = &JsonResult{Code: 200, Message: "Cancle Success"}
+			this.Data["json"] = &JsonResult{Code: 200, Message: "Cancle Success"}
 		} else {
 			RedisClient.SAdd(key, ip)
-			index.Data["json"] = &JsonResult{Code: 200, Message: "Favor Success"}
+			this.Data["json"] = &JsonResult{Code: 200, Message: "Favor Success"}
 		}
 
 	}
 
-	index.ServeJSON()
+	this.ServeJSON()
 }

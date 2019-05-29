@@ -21,6 +21,10 @@ func init() {
 	// 评论功能
 	beego.Router("/comment", &controllers.CommentController{}, "post:Comment")
 
+	// 精品文章
+	beego.Router("/nugget/c/:cid([0-9a-z]+)", &controllers.NuggetController{}, "get:ArticleList")
+	beego.Router("/nugget/a/:aid([0-9]+)", &controllers.NuggetController{}, "get:ArticleDetail")
+
 	beego.Router("/login", &controllers.AuthController{}, "get:Login;post:PostLogin")
 	beego.Router("/register", &controllers.AuthController{}, "get:Register;post:PostRegister")
 }

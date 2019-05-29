@@ -14,6 +14,7 @@ type BaseController struct {
 var (
 	Categories  []models.Category       // 栏目列表
 	Tags        []models.Tag            // 标签列表
+	NuggetTags  []models.NuggetTags     // Nugget标签列表
 	Archive     []models.ArticleArchive // 文章归档
 	Like        []models.Article        // 猜你喜欢
 	RedisClient *redis.Client
@@ -25,6 +26,9 @@ func (this *BaseController) Prepare() {
 
 	// 获取所有的标签
 	Tags = models.GetTags(make(map[string]interface{}))
+
+	// 获取Nugget的所有标签
+	NuggetTags = models.GetAllTags()
 
 	// 获取猜你喜欢的文章
 	Like = models.GetArticlesLimit(make(map[string]interface{}), 0, 5)

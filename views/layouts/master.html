@@ -30,36 +30,46 @@
         <ul class="am-nav am-nav-pills am-topbar-nav">
             <li><a href='{{ urlfor "IndexController.Get" }}'>首页</a></li>
             <li class="am-dropdown" data-am-dropdown>
-                <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                <a class="am-dropdown-toggle cates" data-am-dropdown-toggle href="javascript:;">
                     技术杂谈
                     <span class="am-icon-caret-down"></span>
                 </a>
                 <ul class="am-dropdown-content">
                     {{ range $index, $ele := .Categories }}
-                    <li><a href="/cate/{{ $ele.Id }}">{{ $ele.Name }}</a></li>
+                        <li><a href="/cate/{{ $ele.Id }}">{{ $ele.Name }}</a></li>
                     {{ end }}
                 </ul>
             </li>
             <li><a href="http://chat.gentleli.cn" target="_blank">聊天室</a></li>
-            <!--<li><a href="">NBA</a></li>-->
+            <li class="am-dropdown" data-am-dropdown>
+                <a class="am-dropdown-toggle nuggets" data-am-dropdown-toggle href="javascript:;">
+                    精品文章
+                    <span class="am-icon-caret-down"></span>
+                </a>
+                <ul class="am-dropdown-content">
+                    {{ range $index, $ele := .NuggetTags }}
+                        <li><a href="/nugget/c/{{ $ele.OutId }}">{{ $ele.Name }}</a></li>
+                    {{ end }}
+                </ul>
+            </li>
             <!--<li><a href="">给我留言</a></li>-->
         </ul>
         <div class="am-topbar-right">
             <!-- 未登录显示登录按钮 -->
             {{ if .username }}
-            <!-- 登录成功后显示用户名 -->
-            <a class="am-btn am-btn-primary am-topbar-btn am-btn-sm" href="javascript:;"><i class="am-icon am-icon-user"></i> {{ .username }}</a>
+                <!-- 登录成功后显示用户名 -->
+                <a class="am-btn am-btn-primary am-topbar-btn am-btn-sm" href="javascript:;"><i class="am-icon am-icon-user"></i> {{ .username }}</a>
             {{ else }}
-            <a class="am-btn am-btn-primary am-topbar-btn am-btn-sm" href="/login">登录</a>
+                <a class="am-btn am-btn-primary am-topbar-btn am-btn-sm" href="/login">登录</a>
             {{ end }}
 
         </div>
 
-        <!--<form class="am-topbar-form am-topbar-right am-form-inline" role="search">-->
-            <!--<div class="am-form-group">-->
-                <!--<input type="text" class="am-form-field am-input-sm" placeholder="搜索">-->
-            <!--</div>-->
-        <!--</form>-->
+        <div class="am-topbar-form am-topbar-right am-form-inline">
+            <div class="am-form-group">
+                <input type="text" class="am-form-field am-input-sm search-value" value="{{ .Search }}" placeholder="搜索">
+            </div>
+        </div>
     </div>
 </nav>
 <hr>
@@ -72,7 +82,7 @@
             <h2 class="blog-text-center blog-title"><span>文章归档</span></h2>
             <ul>
                 {{ range $index, $ele := .Archive }}
-                <li><a href="/date/{{ $ele.Value }}">{{ $ele.Date }}（{{ $ele.Sum }}）</a></li>
+                    <li><a href="/date/{{ $ele.Value }}">{{ $ele.Date }}（{{ $ele.Sum }}）</a></li>
                 {{ end }}
             </ul>
         </div>
@@ -80,7 +90,7 @@
             <h2 class="blog-title"><span>标签云</span></h2>
             <div class="am-u-sm-12 blog-clear-padding">
                 {{ range $index, $ele := .Tags }}
-                <a href="/tag/{{ $ele.Id }}" class="blog-tag">{{ $ele.Name }}</a>
+                    <a href="/tag/{{ $ele.Id }}" class="blog-tag">{{ $ele.Name }}</a>
                 {{ end }}
             </div>
         </div>
@@ -88,7 +98,7 @@
             <h2 class="blog-title"><span>猜你喜欢</span></h2>
             <ul class="am-list">
                 {{ range $index, $ele := .Like }}
-                <li><a href="/article/{{ $ele.Id }}">{{ $ele.Title }}</a></li>
+                    <li><a href="/article/{{ $ele.Id }}">{{ $ele.Title }}</a></li>
                 {{ end }}
             </ul>
         </div>
@@ -105,6 +115,37 @@
 <!--<![endif]-->
 
 <script src="/myjs/amazeui.min.js"></script>
+<script>
+    $(function () {
+        let path = window.location.pathname;
+
+        // 高亮菜单栏
+        if (path == '/') {
+            $('.am-nav').find('a[href="' + path + '"]').parent('li').addClass('am-active');
+        } else if (path.match(/cate.*?/)) {
+            $('.cates').css('color', '#10D07A');
+        } else if (path.match(/nugget\/c\/.*?/)) {
+            $('.nuggets').css('color', '#10D07A');
+            $('.blog-sidebar').hide();
+        } else if (path.match(/tag.*?/)) {
+            $('.search-value').hide();
+            $('.cates').css('color', '#10D07A');
+        } else if (path.match(/article.*?/)) {
+            $('.search-value').hide();
+            $('.cates').css('color', '#10D07A');
+        } else if (path.match(/nugget\/a\/.*?/)) {
+            $('.search-value').hide();
+            $('.nuggets').css('color', '#10D07A');
+            $('.blog-sidebar').hide();
+        }
+
+        $('.search-value').on('keyup', function (e) {
+            if (e.keyCode == "13") {
+                window.location.href = path + '?search=' + $(this).val()
+            }
+        })
+    })
+</script>
 
 {{ .Script }}
 
