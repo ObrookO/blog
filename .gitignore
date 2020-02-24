@@ -2,3 +2,4 @@
 .idea/
 conf/*
 blog
+go.sum
