@@ -1,5 +1,7 @@
 .DS_Store
 .idea/
-conf/*
+*.conf
 blog
 go.sum
+*.log
+*.exe

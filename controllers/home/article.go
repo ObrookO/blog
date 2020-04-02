@@ -1,4 +1,4 @@
-package controllers
+package home
 
 import (
 	"blog/models"
@@ -16,11 +16,12 @@ type ArticleController struct {
 
 // 根据栏目id获取文章列表
 func (this *ArticleController) GetAllArticlesByCate() {
-	this.Layout = "layouts/master.html"
-	this.TplName = "article/list.html"
-	this.LayoutSections = make(map[string]string)
-	this.LayoutSections["Style"] = "article/list_style.html"
-	this.LayoutSections["Script"] = "article/list_script.html"
+	this.Layout = "home/layouts/master.html"
+	this.TplName = "home/article/list.html"
+	this.LayoutSections = map[string]string{
+		"Style":  "home/article/list_style.html",
+		"Script": "home/article/list_script.html",
+	}
 
 	// 栏目id
 	cid := this.GetString(":cid")
@@ -56,10 +57,8 @@ func (this *ArticleController) GetAllArticlesByCate() {
 	}
 
 	this.Data["username"] = this.GetSession("username")
-	this.Data["Categories"] = Categories
 	this.Data["Articles"] = articles
 	this.Data["Tags"] = Tags
-	this.Data["NuggetTags"] = NuggetTags
 	this.Data["Archive"] = Archive
 	this.Data["Like"] = Like
 	this.Data["Paginator"] = p
@@ -69,11 +68,12 @@ func (this *ArticleController) GetAllArticlesByCate() {
 
 // 根据日期获取文章列表
 func (this *ArticleController) GetArticlesByDate() {
-	this.Layout = "layouts/master.html"
-	this.TplName = "article/list.html"
-	this.LayoutSections = make(map[string]string)
-	this.LayoutSections["Style"] = "article/list_style.html"
-	this.LayoutSections["Script"] = "article/list_script.html"
+	this.Layout = "home/layouts/master.html"
+	this.TplName = "home/article/list.html"
+	this.LayoutSections = map[string]string{
+		"Style":  "home/article/list_style.html",
+		"Script": "article/list_script.html",
+	}
 
 	date := this.GetString(":year") + "-" + this.GetString(":month")
 
@@ -118,10 +118,8 @@ func (this *ArticleController) GetArticlesByDate() {
 	}
 
 	this.Data["username"] = this.GetSession("username")
-	this.Data["Categories"] = Categories
 	this.Data["Articles"] = articles
 	this.Data["Tags"] = Tags
-	this.Data["NuggetTags"] = NuggetTags
 	this.Data["Archive"] = Archive
 	this.Data["Like"] = Like
 	this.Data["Paginator"] = p
@@ -131,11 +129,12 @@ func (this *ArticleController) GetArticlesByDate() {
 
 // 根据标签获取文章列表
 func (this *ArticleController) GetArticlesByTag() {
-	this.Layout = "layouts/master.html"
-	this.TplName = "article/list.html"
-	this.LayoutSections = make(map[string]string)
-	this.LayoutSections["Style"] = "article/list_style.html"
-	this.LayoutSections["Script"] = "article/list_script.html"
+	this.Layout = "home/layouts/master.html"
+	this.TplName = "home/article/list.html"
+	this.LayoutSections = map[string]string{
+		"Style":  "home/article/list_style.html",
+		"Script": "article/list_script.html",
+	}
 
 	tid := this.GetString(":tid")
 
@@ -160,10 +159,8 @@ func (this *ArticleController) GetArticlesByTag() {
 	}
 
 	this.Data["username"] = this.GetSession("username")
-	this.Data["Categories"] = Categories
 	this.Data["Articles"] = articles
 	this.Data["Tags"] = Tags
-	this.Data["NuggetTags"] = NuggetTags
 	this.Data["Archive"] = Archive
 	this.Data["Like"] = Like
 	this.Data["Paginator"] = p
@@ -171,10 +168,11 @@ func (this *ArticleController) GetArticlesByTag() {
 
 // 文章详情页
 func (this *ArticleController) ArticleInfo() {
-	this.Layout = "layouts/master.html"
-	this.TplName = "article/detail.html"
-	this.LayoutSections = make(map[string]string)
-	this.LayoutSections["Script"] = "article/detail_script.html"
+	this.Layout = "home/layouts/master.html"
+	this.TplName = "home/article/detail.html"
+	this.LayoutSections = map[string]string{
+		"Script": "home/article/detail_script.html",
+	}
 
 	// 文章id
 	aid, err := strconv.Atoi(this.GetString(":aid"))
@@ -203,9 +201,7 @@ func (this *ArticleController) ArticleInfo() {
 
 	this.Data["username"] = this.GetSession("username")
 	this.Data["xsrf_token"] = this.XSRFToken()
-	this.Data["Categories"] = Categories
 	this.Data["Tags"] = Tags
-	this.Data["NuggetTags"] = NuggetTags
 	this.Data["Comments"] = comments
 	this.Data["Archive"] = Archive
 	this.Data["Like"] = Like

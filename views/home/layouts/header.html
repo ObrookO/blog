@@ -1,0 +1,37 @@
+<nav class="am-g am-g-fixed blog-fixed blog-nav">
+    <div class="am-collapse am-topbar-collapse" id="blog-collapse">
+        <ul class="am-nav am-nav-pills am-topbar-nav">
+            <li>
+                <a href="{{ urlfor "IndexController.Get" }}" class="logo">
+                    <img src="/static/favicon.png" height="50" alt="logo">
+                </a>
+            </li>
+            <li><a href="">技术杂谈</a></li>
+            <li><a href="">干货分享</a></li>
+            <li><a href="">相关推荐</a></li>
+            <li><a href="">给我留言</a></li>
+        </ul>
+        <div class="am-topbar-right">
+            {{ if .isLogin }}
+                <!-- 登录成功后显示用户名 -->
+                <a class="am-btn am-btn-primary am-topbar-btn" href="javascript:;">
+                    <i class="am-icon am-icon-user"></i> {{ .user.username }}
+                </a>
+                <a class="am-btn am-btn-primary am-topbar-btn" href="{{ urlfor "AuthController.Logout" }}">退出</a>
+            {{ else }}
+                <!-- 未登录显示登录按钮 -->
+                <a class="am-btn am-btn-primary am-topbar-btn" href="{{ urlfor "AuthController.Login" }}">登录</a>
+                <a class="am-btn am-btn-primary am-topbar-btn" href="{{ urlfor "AuthController.Register" }}">注册</a>
+            {{ end }}
+
+        </div>
+
+        <div class="am-topbar-form am-topbar-right am-form-inline">
+            <div class="am-form-group">
+                <input type="text" class="am-form-field search-value" value="{{ .Search }}"
+                       placeholder="搜索">
+            </div>
+        </div>
+    </div>
+</nav>
+<hr>

@@ -1,0 +1,14 @@
+appname =
+httpport =
+runmode =
+enablexsrf =
+xsrfexpire =
+sessionon =
+sessionprovider =
+sessionproviderconfig =
+copyrequestbody = true
+db_user =
+db_password =
+EnableAdmin =
+AdminAddr =
+AdminPort =

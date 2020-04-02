@@ -14,7 +14,8 @@ import (
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	// 注册默认数据库
-	orm.RegisterDataBase("default", "mysql", beego.AppConfig.String("db_user")+":"+beego.AppConfig.String("db_password")+"@tcp(127.0.0.1:3306)/blog?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", beego.AppConfig.String("db_user")+":"+beego.AppConfig.String(
+		"db_password")+"@tcp(127.0.0.1:3306)/blog?charset=utf8&loc=Asia%2FShanghai")
 	// 注册聊天系统的数据库
 	// orm.RegisterDataBase("chat", "mysql", beego.AppConfig.String("db_user")+":"+beego.AppConfig.String("db_password")+"@tcp(127.0.0.1:3306)/chat?charset=utf8")
 }

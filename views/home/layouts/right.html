@@ -1,0 +1,26 @@
+<div class="am-u-md-4 am-u-sm-12 blog-sidebar">
+    <div class="blog-sidebar-widget blog-bor">
+        <h2 class="blog-text-center blog-title"><span>文章归档</span></h2>
+        <ul>
+            {{ range $index, $ele := .Archive }}
+                <li><a href="/date/{{ $ele.Value }}">{{ $ele.Date }}（{{ $ele.Sum }}）</a></li>
+            {{ end }}
+        </ul>
+    </div>
+    <div class="blog-clear-margin blog-sidebar-widget blog-bor am-g ">
+        <h2 class="blog-title"><span>标签云</span></h2>
+        <div class="am-u-sm-12 blog-clear-padding">
+            {{ range $index, $ele := .Tags }}
+                <a href="/tag/{{ $ele.Id }}" class="blog-tag">{{ $ele.Name }}</a>
+            {{ end }}
+        </div>
+    </div>
+    <div class="blog-sidebar-widget blog-bor">
+        <h2 class="blog-title"><span>猜你喜欢</span></h2>
+        <ul class="am-list">
+            {{ range $index, $ele := .Like }}
+                <li><a href="/article/{{ $ele.Id }}">{{ $ele.Title }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+</div>

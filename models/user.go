@@ -2,41 +2,50 @@ package models
 
 import (
 	_ "fmt"
+	"time"
 
 	"github.com/astaxie/beego/orm"
 )
 
-type Users struct {
+type User struct {
 	Id        int
-	Username  string `form:"username" valid:"Required"`
-	Password  string `form:"password" valid:"Required"`
+	Username  string
+	Email     string
+	Password  string
 	Avatar    string
-	Motto     string
-	CreatedAt int64
+	CreatedAt time.Time `orm:"auto_now_add;type(timestamp)"`
+	UpdatedAt time.Time `orm:"auto_now;type(timestamp)"`
 }
 
 func init() {
-	orm.RegisterModel(new(Users))
+	orm.RegisterModel(new(User))
 }
 
 // 判断用户是否存在
-func IsUserExists(where map[string]interface{}) bool {
-	o := orm.NewOrm()
-	o.Using("chat")
+func IsUserExists(filter map[string]interface{}) bool {
+	needle := orm.NewOrm().QueryTable("user")
 
-	needle := o.QueryTable("users")
-
-	for key, value := range where {
+	for key, value := range filter {
 		needle = needle.Filter(key, value)
 	}
 
 	return needle.Exist()
 }
 
-// 添加用户
-func AddUser(data *Users) (int64, error) {
-	o := orm.NewOrm()
-	o.Using("chat")
+// 获取某个用户的信息
+func GetOneUser(filter map[string]interface{}) (User, error) {
+	var user User
+	needle := orm.NewOrm().QueryTable("user")
 
-	return o.Insert(data)
+	for key, value := range filter {
+		needle = needle.Filter(key, value)
+	}
+
+	err := needle.One(&user)
+	return user, err
+}
+
+// 添加用户
+func AddUser(data *User) (int64, error) {
+	return orm.NewOrm().Insert(data)
 }
