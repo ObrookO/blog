@@ -4608,8 +4608,8 @@ a.am-close:hover {
 ============================================================================= */
 @font-face {
   font-family: 'FontAwesome';
-  src: url('/myfonts/fontawesome-webfont.eot?v=4.3.0');
-  src: url('/myfonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'), url('/myfonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'), url('/myfonts/fontawesome-webfont.woff?v=4.3.0') format('woff'), url('/myfonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'), url('/myfonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
+  src: url('/hfonts/fontawesome-webfont.eot?v=4.3.0');
+  src: url('/hfonts/fontawesome-webfont.eot?#iefix&v=4.3.0') format('embedded-opentype'), url('/hfonts/fontawesome-webfont.woff2?v=4.3.0') format('woff2'), url('/hfonts/fontawesome-webfont.woff?v=4.3.0') format('woff'), url('/hfonts/fontawesome-webfont.ttf?v=4.3.0') format('truetype'), url('/hfonts/fontawesome-webfont.svg?v=4.3.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }

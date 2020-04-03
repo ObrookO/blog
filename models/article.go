@@ -20,14 +20,8 @@ type Article struct {
 	CreatedAt  string
 }
 
-type ArticleArchive struct {
-	Date  string
-	Value string
-	Sum   int
-}
-
 func init() {
-	orm.RegisterModel(new(Article))
+	orm.RegisterModelWithPrefix("admin_", new(Article))
 }
 
 // 获取所有的文章
@@ -36,8 +30,8 @@ func init() {
 // limit int 取的条数
 func GetArticlesLimit(where map[string]interface{}, offset int, limit int) []Article {
 	var articles []Article
-	o := orm.NewOrm()
-	needle := o.QueryTable("article")
+
+	needle := orm.NewOrm().QueryTable("admin_article")
 	for key, value := range where {
 		needle = needle.Filter(key, value)
 	}
@@ -49,8 +43,7 @@ func GetArticlesLimit(where map[string]interface{}, offset int, limit int) []Art
 // 判断文章是否存在
 // where map[string]interface{} 查询条件
 func IsArticleExists(where map[string]interface{}) bool {
-	o := orm.NewOrm()
-	needle := o.QueryTable("article")
+	needle := orm.NewOrm().QueryTable("admin_article")
 
 	for key, value := range where {
 		needle = needle.Filter(key, value)
@@ -62,8 +55,7 @@ func IsArticleExists(where map[string]interface{}) bool {
 // 获取文章总数
 // map[string]interface{} 查询条件
 func GetTotal(where map[string]interface{}) (int64, error) {
-	o := orm.NewOrm()
-	needle := o.QueryTable("article")
+	needle := orm.NewOrm().QueryTable("admin_article")
 
 	for key, value := range where {
 		needle = needle.Filter(key, value)
@@ -77,7 +69,8 @@ func Archive() []ArticleArchive {
 	var archive []ArticleArchive
 	o := orm.NewOrm()
 
-	o.Raw("select date_format(created_at, '%Y年%m月') as date, date_format(created_at, '%Y/%m') as value, count(*) as sum from article group by value").QueryRows(&archive)
+	o.Raw("select date_format(created_at, '%Y年%m月') as date, date_format(created_at, '%Y/%m') as value, " +
+		"count(*) as sum from admin_article group by value").QueryRows(&archive)
 	return archive
 
 }
@@ -104,8 +97,7 @@ func GetArticlesByTag(col string, value string, off int, lim int) []Article {
 // where map[string]interface{} 查询条件
 func GetOneArticle(where map[string]interface{}) (Article, error) {
 	var article Article
-	o := orm.NewOrm()
-	needle := o.QueryTable("article")
+	needle := orm.NewOrm().QueryTable("admin_article")
 
 	for key, value := range where {
 		needle = needle.Filter(key, value)
@@ -122,16 +114,16 @@ func GetBeforeAndAfter(aid int) (int, int) {
 	var article Article
 	var before, after int
 
-	o := orm.NewOrm()
+	needle := orm.NewOrm().QueryTable("admin_article")
 	// 获取上一篇文章的id
-	if err := o.QueryTable("article").Filter("id__lt", aid).OrderBy("-id").One(&article, "id"); err == nil {
+	if err := needle.Filter("id__lt", aid).OrderBy("-id").One(&article, "id"); err == nil {
 		before = article.Id
 	} else {
 		before = 0
 	}
 
 	// 获取下一篇文章的id
-	if err := o.QueryTable("article").Filter("id__gt", aid).OrderBy("id").One(&article, "id"); err == nil {
+	if err := needle.Filter("id__gt", aid).OrderBy("id").One(&article, "id"); err == nil {
 		after = article.Id
 	} else {
 		after = 0

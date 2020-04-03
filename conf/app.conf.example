@@ -6,6 +6,7 @@ xsrfexpire =
 sessionon =
 sessionprovider =
 sessionproviderconfig =
+sessionname =
 copyrequestbody = true
 db_user =
 db_password =

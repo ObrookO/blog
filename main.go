@@ -22,11 +22,17 @@ func init() {
 
 func main() {
 	// 设置前端资源路径
-	beego.SetStaticPath("/mycss", "static/css")
-	beego.SetStaticPath("/myimg", "static/img")
-	beego.SetStaticPath("/myjs", "static/js")
-	beego.SetStaticPath("/myi", "static/i")
-	beego.SetStaticPath("/myfonts", "static/fonts")
+	beego.SetStaticPath("/hcss", "static/home/css")
+	beego.SetStaticPath("/himg", "static/home/img")
+	beego.SetStaticPath("/hjs", "static/home/js")
+	beego.SetStaticPath("/hi", "static/home/i")
+	beego.SetStaticPath("/hfonts", "static/home/fonts")
+
+	beego.SetStaticPath("/acss", "static/admin/css")
+	beego.SetStaticPath("/aimg", "static/admin/img")
+	beego.SetStaticPath("/ajs", "static/admin/js")
+	beego.SetStaticPath("/ai", "static/admin/i")
+	beego.SetStaticPath("/afonts", "static/admin/fonts")
 
 	// 注册自定义函数
 	beego.AddFuncMap("formatDate", formatDate)

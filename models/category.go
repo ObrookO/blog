@@ -1,16 +1,22 @@
 package models
 
 import (
+	"time"
+
 	"github.com/astaxie/beego/orm"
 )
 
 type Category struct {
-	Id   int
-	Name string
+	Id        int
+	Name      string
+	ShortName string
+	ManagerId int
+	CreatedAt time.Time `orm:"auto_now_add;type(timestamp)"`
+	UpdatedAt time.Time `orm:"auto_now;type(timestamp)"`
 }
 
 func init() {
-	orm.RegisterModel(new(Category))
+	orm.RegisterModelWithPrefix("admin_", new(Category))
 }
 
 // 获取所有的栏目
