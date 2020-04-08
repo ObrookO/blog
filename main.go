@@ -11,10 +11,14 @@ import (
 )
 
 func init() {
+	host := beego.AppConfig.String("db_host")
+	db := beego.AppConfig.String("db_name")
+	user := beego.AppConfig.String("db_user")
+	pass := beego.AppConfig.String("db_password")
+
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	// 注册默认数据库
-	orm.RegisterDataBase("default", "mysql", beego.AppConfig.String("db_user")+":"+beego.AppConfig.String(
-		"db_password")+"@tcp(127.0.0.1:3306)/blog?charset=utf8&loc=Asia%2FShanghai")
+	orm.RegisterDataBase("default", "mysql", user+":"+pass+"@tcp("+host+")/"+db+"?charset=utf8&loc=Asia%2FShanghai")
 }
 
 func main() {
