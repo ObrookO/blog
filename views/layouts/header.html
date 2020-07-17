@@ -1,35 +1,61 @@
+<header class="am-g am-g-fixed blog-fixed blog-text-center blog-header" id="header">
+    <div class="am-u-sm-8 am-u-sm-centered">
+        <h1 style="font-size: 40px;">{{.appTitle}}</h1>
+    </div>
+</header>
+<hr>
+
 <nav class="am-g am-g-fixed blog-fixed blog-nav">
     <div class="am-collapse am-topbar-collapse" id="blog-collapse">
         <ul class="am-nav am-nav-pills am-topbar-nav">
             <li>
-                <a href="{{ urlfor "IndexController.Get" }}" class="logo">
-                    <img src="/static/favicon.png" height="50" alt="logo">
-                </a>
+                <a href="{{urlfor "IndexController.Get"}}">首页</a>
             </li>
-            <li><a href="">技术杂谈</a></li>
-            <li><a href="">干货分享</a></li>
-            <li><a href="">相关推荐</a></li>
-            <li><a href="">给我留言</a></li>
+            <li class="am-dropdown" data-am-dropdown>
+                <a href="javascript:;" class="am-dropdown-toggle nav-cates" data-am-dropdown-toggle>
+                    技术杂谈
+                    <span class="am-icon-caret-down"></span>
+                </a>
+                <ul class="am-dropdown-content">
+                    {{range $c := .categories}}
+                        <li><a href="{{urlfor "ArticleController.Get"}}?cid={{$c.Id}}">{{$c.Name}}</a></li>
+                    {{end}}
+                </ul>
+            </li>
+            <li class="am-dropdown" data-am-dropdown>
+                <a href="javascript:;" class="am-dropdown-toggle nav-tools" data-am-dropdown-toggle>
+                    实用工具
+                    <span class="am-icon-caret-down"></span>
+                </a>
+                <ul class="am-dropdown-content">
+                    <li><a href="{{urlfor "ToolController.Md5"}}">MD5加解密</a></li>
+                    <li><a href="{{urlfor "ToolController.Aes"}}">AES加解密</a></li>
+                    <li><a href="{{urlfor "ToolController.Base64"}}">BASE64转码</a></li>
+                    <li><a href="{{urlfor "ToolController.RandomStr"}}">生成随机字符串</a></li>
+                    <li><a href="{{urlfor "ToolController.StrLength"}}">计算字符串长度</a></li>
+                </ul>
+            </li>
+            <li><a href="{{urlfor "ResourceController.Get"}}" class="nav-resource">干货收藏</a></li>
+            <li><a href="{{.githubUrl}}" target="_blank">Github</a></li>
+{{/*            <li><a href="">给我留言</a></li>*/}}
         </ul>
         <div class="am-topbar-right">
-            {{ if .isLogin }}
+            {{if .isLogin}}
                 <!-- 登录成功后显示用户名 -->
-                <a class="am-btn am-btn-primary am-topbar-btn" href="javascript:;">
-                    <i class="am-icon am-icon-user"></i> {{ .user.username }}
+                <a class="am-btn am-btn-secondary am-topbar-btn" href="javascript:;">
+                    <i class="am-icon am-icon-user"></i> {{.username}}
                 </a>
-                <a class="am-btn am-btn-primary am-topbar-btn" href="{{ urlfor "AuthController.Logout" }}">退出</a>
-            {{ else }}
+                <a class="am-btn am-btn-secondary am-topbar-btn" href="{{urlfor "AuthController.Logout"}}"><i class="am-icon am-icon-sign-out"></i>
+                    退出</a>
+            {{else}}
                 <!-- 未登录显示登录按钮 -->
-                <a class="am-btn am-btn-primary am-topbar-btn" href="{{ urlfor "AuthController.Login" }}">登录</a>
-                <a class="am-btn am-btn-primary am-topbar-btn" href="{{ urlfor "AuthController.Register" }}">注册</a>
-            {{ end }}
-
+                <a class="am-btn am-btn-secondary am-topbar-btn" href="{{urlfor "AuthController.Login"}}"><i class="am-icon am-icon-sign-in"></i> 登录</a>
+            {{end}}
         </div>
 
         <div class="am-topbar-form am-topbar-right am-form-inline">
             <div class="am-form-group">
-                <input type="text" class="am-form-field search-value" value="{{ .Search }}"
-                       placeholder="搜索">
+                <input type="text" class="am-form-field search-value" value="{{.search}}" placeholder="请输入文章标题">
             </div>
         </div>
     </div>

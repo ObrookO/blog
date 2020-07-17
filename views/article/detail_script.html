@@ -1,56 +1,44 @@
 <script>
     /**
-     * 获取上一篇文章
-     *
-     * @param bid
-     */
-    function getPrev(bid) {
-        if (bid > 0) {
-            window.location.href = '/article/' + bid;
-        } else {
-            alert('已经到头了！');
-        }
-    }
-
-    /**
-     * 获取下一篇文章
-     *
-     * @param aid
-     */
-    function getAfter(aid) {
-        if (aid > 0) {
-            window.location.href = '/article/' + aid;
-        } else {
-            alert('已经到头了！');
-        }
-    }
-
-    /**
      * 评论功能
      * @param obj
      */
     function comment(obj) {
         let fieldset = $(obj).parents('fieldset'),
             id = fieldset.find('[name=id]').val(),
-            content = fieldset.find('.content').val();
+            content = $.trim(fieldset.find('.content').val());
 
         $.ajax({
-            url: '/comment',
+            url: '{{urlfor "CommentController.Post"}}',
             type: 'post',
             data: {
-                _xsrf: $('[name=_xsrf]').val(),
-                aid: id,
+                _xsrf: GToken,
+                id: id,
                 content: content
             },
+            beforeSend: function () {
+                if (content.length === 0) {
+                    fieldset.find('.error').text('请填写评论内容');
+                    return false;
+                }
+            },
             success: function (data) {
-                if (data.code !== 200) {
-                    alert(data.message);
-                } else {
+                if (data.code === 200) {
+                    alert('评论成功');
                     window.location.reload();
+                    fieldset.find('#comment').click();
+                } else {
+                    // 判断是否是未登录
+                    if (data.code === 402) {
+                        alert('请登录后尝试');
+                        window.location.href = '{{urlfor "AuthController.Login"}}';
+                    } else {
+                        fieldset.find('.error').text(data.msg);
+                    }
                 }
             },
             error: function () {
-                alert('评论失败');
+                fieldset.find('.error').text('评论失败');
             }
         })
     }

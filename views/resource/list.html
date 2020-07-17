@@ -1,0 +1,20 @@
+<div class="am-g am-g-fixed blog-fixed">
+    <div class="am-u-md-8 am-u-sm-12">
+        {{range $index, $r := .list}}
+            <article class="am-g blog-entry-article">
+                <div class="am-u-lg-6 am-u-md-12 am-u-sm-12">
+                    {{add $index 1}}、
+                    <a href="{{$r.Url}}" target="_blank">
+                        <strong>{{$r.Title}}</strong>
+                    </a>
+
+                    {{if $r.Description}}
+                        （{{$r.Description}}）
+                    {{end}}
+                </div>
+            </article>
+        {{end}}
+    </div>
+
+    {{template "layouts/right.html" .}}
+</div>

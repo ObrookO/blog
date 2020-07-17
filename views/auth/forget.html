@@ -1,0 +1,191 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="{{.appTitle}}">
+    <meta name="description" content="分享技术、干货">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+
+    <title>{{.appTitle}} | 重置密码</title>
+
+    {{assets_css "/css/amazeui.min.css"}}
+    {{assets_css "/css/app.css"}}
+
+    <style>
+        .code {
+            width: 65% !important;
+        }
+
+        .captcha {
+            width: 30% !important;
+            height: 38px;
+            background: #ffffff;
+        }
+
+        .green {
+            background: #53d192
+        }
+    </style>
+
+</head>
+
+<body id="blog">
+<div class="log">
+    <div class="am-g">
+        <div class="am-u-lg-3 am-u-md-6 am-u-sm-8 am-u-sm-centered log-content">
+            <h1 class="log-title am-animation-slide-top">重置密码</h1>
+            <br>
+            <form class="am-form" id="log-form">
+                {{.xsrfdata}}
+                <div class="am-input-group am-radius am-animation-slide-left">
+                    <span class="am-input-group-label log-icon am-radius">
+                        <i class="am-icon-user am-icon-sm am-icon-fw"></i>
+                    </span>
+                    <input type="text" class="am-radius" name="username" placeholder="用户名" required/>
+                </div>
+                <div class="am-input-group am-radius am-animation-slide-left" style="margin-top: 2px">
+                    <button type="button" class="am-btn am-btn-success am-btn-sm green" onclick="sendCode(this)">获取验证码</button>
+                </div>
+                <br>
+                <div class="am-input-group am-animation-slide-left log-animation-delay">
+                    <span class="am-input-group-label log-icon am-radius">
+                        <i class="am-icon-adn am-icon-sm am-icon-fw"></i>
+                    </span>
+                    <input type="text" class="am-form-field am-radius log-input" name="code" placeholder="邮箱验证码"
+                           required>
+                </div>
+                <br>
+                <div class="am-input-group am-animation-slide-left log-animation-delay">
+                    <span class="am-input-group-label log-icon am-radius">
+                        <i class="am-icon-lock am-icon-sm am-icon-fw"></i>
+                    </span>
+                    <input type="password" class="am-form-field am-radius log-input" name="password" placeholder="密码"
+                           required>
+                </div>
+                <br>
+                <p class="error am-text-default am-text-center am-text-danger" style="font-weight: bold"></p>
+                <button type="button" class="am-btn am-btn-success am-btn-block am-btn-lg am-radius
+                am-animation-slide-bottom
+                log-animation-delay green" onclick="resetPassword(this)">
+                    确 定
+                </button>
+                <br>
+                <p class="am-animation-slide-bottom log-animation-delay am-text-left">
+                    <a href="{{urlfor "IndexController.Get"}}" style="margin-top: 10px" class="am-btn am-btn-success am-btn-xs
+                    am-animation-slide-left
+                    green">
+                        <i class="am-icon am-icon-arrow-circle-left"></i> 返回首页
+                    </a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{assets_js "/js/jquery.min.js"}}
+{{assets_js "/js/amazeui.min.js"}}
+
+<script>
+    let token = $('input[name=_xsrf]').val();
+
+    /**
+     * 发送验证码
+     * @param obj
+     */
+    function sendCode(obj) {
+        let form = $(obj).parents('form'),
+            username = $.trim(form.find('input[name=username]').val()),
+            interval = 60;
+
+        $(obj).attr('disabled', true);
+
+        $.ajax({
+            url: '{{urlfor "AuthController.SendResetEmail"}}',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                _xsrf: token,
+                username: username,
+            },
+            beforeSend: function () {
+                if (username.length === 0) {
+                    form.find('.error').text('请输入用户名');
+                    $(obj).attr('disabled', false);
+                    return false;
+                }
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    // 倒计时
+                    let i = setInterval(function () {
+                        if (interval > 0) {
+                            let str = '重新获取(' + interval + ')';
+                            interval--;
+
+                            $(obj).text(str);
+                        } else {
+                            clearInterval(i);
+                            $(obj).text('获取验证码');
+                            $(obj).attr('disabled', false)
+                        }
+                    }, 1000);
+                }
+            },
+            error: function () {
+                form.find('.error').text('系统错误');
+                $(obj).attr('disabled', false)
+            }
+        })
+    }
+
+
+    /**
+     * 重置密码
+     * @param obj
+     */
+    function resetPassword(obj) {
+        let form = $(obj).parents('form'),
+            username = form.find('input[name=username]').val(),
+            password = form.find('input[name=password]').val(),
+            code = form.find('input[name=code]').val();
+
+        $.ajax({
+            url: '{{urlfor "AuthController.ResetPassword"}}',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                _xsrf: token,
+                username: username,
+                password: password,
+                code: code
+            },
+            beforeSend: function () {
+                if (username.length === 0) {
+                    form.find('.error').text('请输入用户名');
+                    return false
+                }
+                if (password.length === 0) {
+                    form.find('.error').text('请输入密码');
+                    return false
+                }
+                if (code.length === 0) {
+                    form.find('.error').text('请输入邮箱验证码');
+                    return false
+                }
+            },
+            success: function (data) {
+                if (data.code !== 200) {
+                    form.find('.error').text(data.msg);
+                } else {
+                    alert('重置密码成功');
+                    window.location.href = '{{urlfor "AuthController.Login"}}'
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
+

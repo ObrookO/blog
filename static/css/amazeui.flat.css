@@ -3999,7 +3999,7 @@ fieldset[disabled] .am-checkbox-inline {
 .am-article + .am-article {
   margin-top: 2.4rem;
 }
-/* Sub-object `.@{ns}article-title` */
+/* Sub-object `.@{ns}index-title` */
 .am-article-title {
   font-size: 2.8rem;
   line-height: 1.15;
@@ -4009,13 +4009,13 @@ fieldset[disabled] .am-checkbox-inline {
   color: inherit;
   text-decoration: none;
 }
-/* Sub-object `.@{ns}article-meta` */
+/* Sub-object `.@{ns}index-meta` */
 .am-article-meta {
   font-size: 1.2rem;
   line-height: 1.5;
   color: #999999;
 }
-/* Sub-object `.@{ns}article-lead` */
+/* Sub-object `.@{ns}index-lead` */
 .am-article-lead {
   color: #666666;
   font-size: 1.4rem;
@@ -4025,7 +4025,7 @@ fieldset[disabled] .am-checkbox-inline {
   background: #f9f9f9;
   padding: 10px;
 }
-/* Sub-object `.@{ns}article-divider` */
+/* Sub-object `.@{ns}index-divider` */
 .am-article-divider {
   margin-bottom: 2.4rem;
   border-color: #eeeeee;
@@ -4033,7 +4033,7 @@ fieldset[disabled] .am-checkbox-inline {
 * + .am-article-divider {
   margin-top: 2.4rem;
 }
-/* Sub-object `.@{ns}article-bd` */
+/* Sub-object `.@{ns}index-bd` */
 .am-article-bd blockquote {
   font-family: Georgia, "Times New Roman", Times, Kai, "Kaiti SC", KaiTi, BiauKai, "FontAwesome", serif;
 }

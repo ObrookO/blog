@@ -100,8 +100,7 @@ body {
 .log {
     width: 100%;
     height: 100%;
-    background: url(/i/f18.jpg) #000 no-repeat;
-    background-size: 100% 100%;
+    background: #334054;
     color: #FFFFFF;
 }
 
@@ -117,11 +116,12 @@ body {
 }
 
 .log-title {
+    color: #53d192;
     font-size: 4rem;
 }
 
 .log-content {
-    margin-top: 15%;
+    margin-top: 8%;
     text-align: center;
 }
 
@@ -446,7 +446,7 @@ h1 span {
 }
 
 /**
- * blog-article-sidebar
+ * blog-index-sidebar
  *
  */
 

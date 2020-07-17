@@ -1,0 +1,40 @@
+<script>
+    function getResult(obj) {
+        let form = $(obj).parents('form'),
+            checked = form.find('input[type=radio]:checked'), // 所有选中的元素
+            l = form.find('#length').val(),
+            charData = {
+                'big': 'ABCDEFGHIJKLMNPQRSTUVWXYZ',
+                'small': 'abcdefghijklmnpqrstuvwxyz',
+                'dig': '123456789',
+                'under': '_'
+            },
+            originData = '', // 字符串结果
+            result = ''; // 最终结果
+
+        checked.each(function () {
+            if ($(this).val() == 1) {
+                originData += charData[$(this).attr('name')];
+            }
+        });
+
+        if (originData.length == 0 || originData == '_') {
+            form.find('#result').val('');
+            form.find('.error').text('大写字母、小写字母、数字至少包含一项');
+            return;
+        }
+
+        if (l <= 1) {
+            form.find('#result').val('');
+            form.find('.error').text('字符串长度最小为1');
+            return;
+        }
+
+        for (let i = 0; i < Math.floor(l); i++) {
+            result += originData.charAt(Math.floor(Math.random() * originData.length));
+        }
+
+        form.find('.error').text('');
+        form.find('#result').val(result)
+    }
+</script>

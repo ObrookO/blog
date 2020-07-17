@@ -1,133 +1,147 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/astaxie/beego/orm"
 )
 
-type Article struct {
-	Id         int
-	Title      string
-	Cate       string
-	Tags       string
-	Desc       string
-	Content    string
-	FavorNum   int
-	CommentNum int64 `orm:"-"`
-	IsFavored  bool  `orm:"-"`
-	Status     string
-	CreatedAt  string
+// IsArticleExists 判断文章是否存在
+func IsArticleExists(filter map[string]interface{}) bool {
+	return concatFilter("article", filter).Exist()
 }
 
-func init() {
-	orm.RegisterModelWithPrefix("admin_", new(Article))
+// GetRecommendArticles 获取推荐的文章
+func GetRecommendArticles(limit int) ([]*Article, error) {
+	var articles []*Article
+
+	field := []string{"id", "title"}
+	_, err := concatFilter("article", map[string]interface{}{"is_recommend": 1, "status": 1}).OrderBy("-id").Limit(limit).All(&articles, field...)
+	return articles, err
 }
 
-// 获取所有的文章
-// where map[string]interface{} 查询条件
-// offset int 偏移量
-// limit int 取的条数
-func GetArticlesLimit(where map[string]interface{}, offset int, limit int) []Article {
-	var articles []Article
+// GetArticleArchive 获取文章归档以及数量
+func GetArticleArchive() ([]*ArticleArchive, error) {
+	var archive []*ArticleArchive
 
-	needle := orm.NewOrm().QueryTable("admin_article")
-	for key, value := range where {
-		needle = needle.Filter(key, value)
+	_, err := o.Raw("select date_format(created_at, '%Y-%m') as date, " +
+		"count(1) as num from article where status = 1 group by date order by date desc").QueryRows(
+		&archive)
+
+	return archive, err
+}
+
+// GetAllArticles 获取所有文章
+func GetAllArticles(filter map[string]interface{}, offset, limit int, field ...string) ([]*Article, error) {
+	var articles []*Article
+
+	_, err := concatFilter("article", filter).
+		RelatedSel().
+		OrderBy("-id").
+		Offset(offset).
+		Limit(limit).
+		All(&articles, field...)
+
+	for _, a := range articles {
+		o.LoadRelated(a, "Tags")
+		o.LoadRelated(a, "Comments")
+		o.LoadRelated(a, "Favors")
 	}
 
-	needle.Offset(offset).Limit(limit).OrderBy("-id").All(&articles, "id", "title", "desc", "created_at")
-	return articles
+	return articles, err
 }
 
-// 判断文章是否存在
-// where map[string]interface{} 查询条件
-func IsArticleExists(where map[string]interface{}) bool {
-	needle := orm.NewOrm().QueryTable("admin_article")
+// GetAllArticlesOfTag 获取标签下的所有文章
+func GetAllArticlesOfTag(filter map[string]interface{}, offset, limit int, field ...string) ([]*Article, error) {
+	var articles []*Article
+	var articleIds orm.ParamsList
+	var err error
+	concatFilter("article_tag", map[string]interface{}{"tag_id": filter["tag_id"]}).ValuesFlat(&articleIds, "article_id")
 
-	for key, value := range where {
-		needle = needle.Filter(key, value)
+	if len(articleIds) > 0 {
+		_, err = concatFilter("article", map[string]interface{}{"id__in": articleIds, "status": 1}).
+			RelatedSel().
+			OrderBy("-id").
+			Offset(offset).
+			Limit(limit).
+			All(&articles, field...)
+
+		for _, a := range articles {
+			o.LoadRelated(a, "Tags")
+			o.LoadRelated(a, "Comments")
+			o.LoadRelated(a, "Favors")
+		}
 	}
 
-	return needle.Exist()
+	return articles, err
 }
 
-// 获取文章总数
-// map[string]interface{} 查询条件
-func GetTotal(where map[string]interface{}) (int64, error) {
-	needle := orm.NewOrm().QueryTable("admin_article")
+// GetAllArticlesOfCategory 获取栏目下的所有文章
+func GetAllArticlesOfCategory(filter map[string]interface{}, offset, limit int, field ...string) ([]*Article, error) {
+	var articles []*Article
 
-	for key, value := range where {
-		needle = needle.Filter(key, value)
+	_, err := concatFilter("article", filter).
+		RelatedSel().
+		OrderBy("-id").
+		Offset(offset).
+		Limit(limit).
+		All(&articles, field...)
+
+	for _, a := range articles {
+		o.LoadRelated(a, "Tags")
+		o.LoadRelated(a, "Comments")
+		o.LoadRelated(a, "Favors")
 	}
 
-	return needle.Count()
+	return articles, err
 }
 
-// 文章归档
-func Archive() []ArticleArchive {
-	var archive []ArticleArchive
-	o := orm.NewOrm()
+// GetAllArticlesOfManager 获取作者的所有文章
+func GetAllArticlesOfManager(filter map[string]interface{}, offset, limit int, field ...string) ([]*Article, error) {
+	var articles []*Article
 
-	o.Raw("select date_format(created_at, '%Y年%m月') as date, date_format(created_at, '%Y/%m') as value, " +
-		"count(*) as sum from admin_article group by value").QueryRows(&archive)
-	return archive
+	_, err := concatFilter("article", filter).
+		RelatedSel().
+		OrderBy("-id").
+		Offset(offset).
+		Limit(limit).
+		All(&articles, field...)
 
-}
-
-// 使用find_in_set查询文章
-func GetArticlesByTag(col string, value string, off int, lim int) []Article {
-	var articles []Article
-	var sql string
-	o := orm.NewOrm()
-
-	if lim > 0 && off >= 0 {
-		sql = fmt.Sprintf("select id, title, `desc`, created_at from article where find_in_set('%s', `%s`) order by id desc limit %d offset %d", value, col, off, lim)
-
-	} else {
-		sql = fmt.Sprintf("select id, title, `desc`, created_at from article where find_in_set('%s', `%s`) order by id desc", value, col)
+	for _, a := range articles {
+		o.LoadRelated(a, "Tags")
+		o.LoadRelated(a, "Comments")
+		o.LoadRelated(a, "Favors")
 	}
 
-	o.Raw(sql).QueryRows(&articles)
-
-	return articles
+	return articles, err
 }
 
-// 获取一篇文章
-// where map[string]interface{} 查询条件
-func GetOneArticle(where map[string]interface{}) (Article, error) {
+// GetAllArticlesOfDate 获取日期下的所有文章
+func GetAllArticlesOfDate(filter map[string]interface{}, offset, limit int, field ...string) ([]*Article, error) {
+	var articles []*Article
+
+	_, err := concatFilter("article", filter).
+		RelatedSel().
+		OrderBy("-id").
+		Offset(offset).
+		Limit(limit).
+		All(&articles, field...)
+
+	for _, a := range articles {
+		o.LoadRelated(a, "Tags")
+		o.LoadRelated(a, "Comments")
+		o.LoadRelated(a, "Favors")
+	}
+
+	return articles, err
+}
+
+// GetOneArticle 获取文章详情
+func GetOneArticle(filter map[string]interface{}, field ...string) (Article, error) {
 	var article Article
-	needle := orm.NewOrm().QueryTable("admin_article")
 
-	for key, value := range where {
-		needle = needle.Filter(key, value)
-	}
+	err := concatFilter("article", filter).RelatedSel().One(&article, field...)
 
-	err := needle.One(&article)
+	o.LoadRelated(&article, "Tags")
+	o.LoadRelated(&article, "Comments", true, 1000, 0, "-id")
 
 	return article, err
-}
-
-// 获取上一篇文章的id以及下一篇文章的id
-// aid int 当前文章的id
-func GetBeforeAndAfter(aid int) (int, int) {
-	var article Article
-	var before, after int
-
-	needle := orm.NewOrm().QueryTable("admin_article")
-	// 获取上一篇文章的id
-	if err := needle.Filter("id__lt", aid).OrderBy("-id").One(&article, "id"); err == nil {
-		before = article.Id
-	} else {
-		before = 0
-	}
-
-	// 获取下一篇文章的id
-	if err := needle.Filter("id__gt", aid).OrderBy("id").One(&article, "id"); err == nil {
-		after = article.Id
-	} else {
-		after = 0
-	}
-
-	return before, after
 }

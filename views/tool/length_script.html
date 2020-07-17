@@ -1,0 +1,10 @@
+<script>
+    function getResult(obj) {
+        let form = $(obj).parents('form'),
+            data = form.find('#raw').val();
+
+        let result = '原始长度为：' + data.length + "\n" + '去除前后空格的长度为：' + $.trim(data).length;
+
+        form.find('#result').val(result);
+    }
+</script>

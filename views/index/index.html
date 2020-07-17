@@ -1,0 +1,60 @@
+{{/*文章列表*/}}
+<div class="am-g am-g-fixed blog-fixed">
+    <div class="am-u-md-8 am-u-sm-12">
+        {{range $a := .articles}}
+            <article class="am-g blog-entry-article">
+                <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-img">
+                    <img src="{{$a.CoverUrl}}" alt="文章封面" height="300" class="am-u-sm-12">
+                </div>
+                <div class="am-u-lg-6 am-u-md-12 am-u-sm-12 blog-entry-text">
+                    <h1>
+                        <a href="{{urlfor "ArticleController.GetArticleDetail" ":id" $a.Id}}">
+                            <label for="" class="am-btn am-btn-danger am-btn-sm">{{$a.Category.Name}}</label>
+                            {{getTitle $a.Title 10}}
+                        </a>
+                    </h1>
+                    <p class="tag">
+                        {{range $t := $a.Tags}}
+                            <i class="am-icon-tag">{{$t.Name}}</i>&nbsp;
+                        {{end}}
+                    </p>
+                    <p class="description">{{$a.Description}}</p>
+                    <p class="footer">
+                        <span>
+                            <i class="am-icon-user"></i>
+                            <a href="{{urlfor "ArticleController.Get"}}?mid={{$a.Manager.Id}}">
+                                <strong class="author">{{$a.Manager.Nickname}}</strong>
+                            </a>
+                        </span>
+                        <span><i class="am-icon-clock-o"></i> {{dateformat $a.CreatedAt "2006/01/02"}}</span>
+                        <span>
+                            <a href="{{urlfor "ArticleController.GetArticleDetail" ":id" $a.Id}}#comment" class="comment">
+                                <i class="am-icon-comments-o"></i> {{len $a.Comments}}评论
+                            </a>
+                        </span>
+                        <span>
+                            <a href="javascript:;" class="favor" onclick="favor(this, {{$a.Id}})">
+                                <i class="am-icon-heart-o"></i> {{len $a.Favors}}喜欢
+                            </a>
+                        </span>
+                    </p>
+                </div>
+            </article>
+        {{end}}
+
+        <ul class="am-pagination">
+            {{if gt .p 1}}
+                <li class="am-pagination-prev">
+                    <a href="{{urlfor "IndexController.Get"}}?p={{sub .p 1}}">&laquo; Prev</a>
+                </li>
+            {{end}}
+            {{if .hasNext}}
+                <li class="am-pagination-next">
+                    <a href="{{urlfor "IndexController.Get"}}?p={{add .p 1}}">Next &raquo;</a>
+                </li>
+            {{end}}
+        </ul>
+    </div>
+
+    {{template "layouts/right.html" .}}
+</div>

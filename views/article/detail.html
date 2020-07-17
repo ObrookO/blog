@@ -2,71 +2,82 @@
 <div class="am-u-md-8 am-u-sm-12">
     <article class="am-article blog-article-p">
         <div class="am-article-hd">
-            <h1 class="am-article-title blog-text-center">{{ .Info.Title }}</h1>
+            <h1 class="am-article-title blog-text-center">{{.article.Title}}</h1>
             <p class="am-article-meta blog-text-center">
-                <span class="am-icon-tags"> &nbsp;</span>
-                <a href="javascript:;">{{ .Info.Tags  }}</a>
-
-                <span class="am-icon-clock-o" style="margin-left: 20px;"> &nbsp;</span>
-                <a href="javascript:;">{{ dateformat .Info.CreatedAt "2006/01/02 15:04:05" }}</a>
+                <span>
+                    <i class="am-icon-user"></i>
+                    <strong style="color: #00a67c">{{.article.Manager.Nickname}}</strong>
+                </span>
+                &nbsp;
+                {{range $t := .article.Tags}}
+                    <span><i class="am-icon-tag"></i> {{$t.Name}}</span>
+                {{end}}
+                &nbsp;
+                <span><i class="am-icon-clock-o"></i>{{dateformat .article.CreatedAt "2006/01/02 15:04:05"}}</span>
             </p>
         </div>
         <div class="am-article-bd">
-            <img src="/i/f10.jpg" alt="" class="blog-entry-img blog-article-margin">
+            <img src="{{.article.CoverUrl}}" alt="文章封面" width="100%" class="blog-entry-img blog-article-margin">
             <blockquote>
-                {{ .Info.Desc }}
+                {{.article.Description}}
             </blockquote>
 
-            {{ str2html .Info.Content }}
+            {{str2html .article.Content}}
         </div>
     </article>
 
-    <hr>
-    <ul class="am-pagination blog-article-margin">
-        <li class="am-pagination-prev"><a href="javascript:;" onclick="getPrev('{{ .Before }}')">&laquo; 上一篇</a></li>
-        <li class="am-pagination-next"><a href="javascript:;" onclick="getAfter('{{ .After }}')">下一篇 &raquo;</a></li>
-    </ul>
-
-    <hr>
-
-    <form id="comment" class="am-form am-g">
-        <h3 class="blog-comment">评论</h3>
-        <fieldset>
-            <input type="hidden" name="id" value="{{ .Info.Id }}">
-            <input type="hidden" name="_xsrf" value="{{ .xsrf_token }}">
-            <div class="am-form-group">
-                <textarea class="content" rows="5" placeholder="一字千金" style="resize: none"></textarea>
-            </div>
-
-            <p>
-                <button type="button" class="am-btn am-btn-default" onclick="comment(this)">发表评论</button>
-            </p>
-        </fieldset>
-    </form>
-
-    <hr>
-
-    {{ range $index, $ele := .Comments }}
-    <!--评论列表-->
-    <article class="am-comment" style="margin-bottom: 20px">
-        <a href="javascript:;">
-            <img src="/static/favicon.png" alt="" class="am-comment-avatar" width="48" height="48"/>
-        </a>
-
-        <div class="am-comment-main">
-            <header class="am-comment-hd">
-                <div class="am-comment-meta">
-                    <a href="#link-to-user" class="am-comment-author">{{ $ele.Username }}</a>
-                    评论于 <time datetime="2013-07-27T04:54:29-07:00" title="2013年7月27日 下午7:54 格林尼治标准时间+0800">{{ $ele.CreatedAt }}</time>
+    {{if eq .article.AllowComment 1}}
+        <hr>
+        <form id="comment" class="am-form am-g">
+            <fieldset>
+                <h3>评论</h3>
+                <input type="hidden" name="id" value="{{.article.Id}}">
+                <div class="am-form-group">
+                    <textarea class="content" rows="5" placeholder="一字千金"></textarea>
                 </div>
-            </header>
 
-            <div class="am-comment-bd">
-                {{ $ele.Content }}
-            </div>
-        </div>
-    </article>
+                <p>
+                <p class="error am-text-danger"></p>
+                <button type="button" class="am-btn am-btn-primary" onclick="comment(this)">提交</button>
+                </p>
+            </fieldset>
+        </form>
+    {{else}}
+        <h3 class="am-text-danger">此文章暂不允许评论</h3>
+    {{end}}
 
-    {{ end }}
+    <p>共<strong> {{len .article.Comments}} </strong>条评论</p>
+    <hr>
+    <br>
+    <div style="max-height: 600px; overflow: auto">
+        {{range $ele := .article.Comments}}
+            <!--评论列表-->
+            <article class="am-comment" style="margin-bottom: 20px">
+                <a href="javascript:;">
+                    {{if eq $ele.Account.Avatar ""}}
+                        <img src="/static/favicon.png" alt="头像" class="am-comment-avatar" width="48" height="48"/>
+                    {{else}}
+                        <img src="{{$ele.Account.Avatar}}" alt="头像" class="am-comment-avatar" width="48" height="48"/>
+                    {{end}}
+                </a>
+
+                <div class="am-comment-main">
+                    <header class="am-comment-hd">
+                        <div class="am-comment-meta">
+                            <a href="#link-to-user" class="am-comment-author">{{$ele.Account.Username}}</a>
+                            评论于
+                            <time>{{dateformat $ele.CreatedAt "2006-01-02 15:04:05"}}</time>
+                        </div>
+                    </header>
+
+                    <div class="am-comment-bd" style="word-break: break-all">
+                        {{$ele.OriginalContent}}
+                    </div>
+                </div>
+            </article>
+        {{end}}
+    </div>
 </div>
 <!-- content end -->
+
+{{template "layouts/right.html" .}}

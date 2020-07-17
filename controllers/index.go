@@ -2,90 +2,35 @@ package controllers
 
 import (
 	"blog/models"
-	"strconv"
-
-	"github.com/beego/wetalk/modules/utils"
 )
 
 type IndexController struct {
 	BaseController
 }
 
-// 首页
+// Get 文章列表
 func (c *IndexController) Get() {
 	c.Layout = "layouts/master.html"
-	c.TplName = "article/list.html"
+	c.TplName = "index/index.html"
 	c.LayoutSections = map[string]string{
-		"Style":  "article/list_style.html",
-		"Script": "article/list_script.html",
+		"Style":  "index/index_style.html",
+		"Script": "index/index_script.html",
 	}
 
-	// 每页的数量
-	per := 10
-	// 当前页
-	page, _ := strconv.Atoi(c.Ctx.Input.Query("p"))
+	p, _ := c.GetInt("p", 1)                 // 页码
+	offset := (p - 1) * articleAmountPerPage // 偏移量
 
-	where := map[string]interface{}{}
-	// 获取查询条件
-	search := c.GetString("search")
-	if len(search) > 0 {
-		where["title__icontains"] = search
-	}
+	// 文章列表
+	filter := map[string]interface{}{"status": 1}
+	articles, _ := models.GetAllArticles(filter, offset, articleAmountPerPage)
 
-	// 文章总数
-	total, _ := models.GetTotal(where)
-	// 分页器
-	p := utils.NewPaginator(c.Ctx.Request, per, total)
-
-	articles := models.GetArticlesLimit(where, (page-1)*per, per)
-
-	// 获取文章的点赞数以及当前IP的点赞情况
-	for key, value := range articles {
-		articles[key].IsFavored = RedisClient.SIsMember("favor_"+strconv.Itoa(value.Id), c.Ctx.Input.IP()).Val()
-		articles[key].FavorNum = len(RedisClient.SMembers("favor_" + strconv.Itoa(value.Id)).Val())
-		where := map[string]interface{}{
-			"aid": value.Id,
-		}
-		articles[key].CommentNum, _ = models.GetCommentsCount(where)
-	}
-
-	c.Data = map[interface{}]interface{}{
-		"isLogin":   IsLogin,
-		"user":      UserInfo,
-		"Search":    search,
-		"Page":      page,
-		"Paginator": p,
-		"Articles":  articles,
-		"Tags":      Tags,
-		"Archive":   Archive,
-	}
-}
-
-// 点赞/取消点赞 功能
-func (c *IndexController) Favor() {
-	ip := c.Ctx.Input.IP()
-	aid := c.GetString(":aid")
-
-	// 构建查询条件
-	where := map[string]interface{}{
-		"id": aid,
-	}
-
-	if exist := models.IsArticleExists(where); !exist {
-		c.Data["json"] = &JSONResponse{Code: 400, Msg: "Article Does Not Exist"}
+	// 判断是否存在下一页
+	if models.IsArticleExists(map[string]interface{}{"id__lt": articles[len(articles)-1].Id}) {
+		c.Data["hasNext"] = true
 	} else {
-		key := "favor_" + aid
-
-		// 如果没点过赞就点赞否则就取消
-		// 把文章id，ip记录到redis中
-		if isFavored := RedisClient.SIsMember(key, ip).Val(); isFavored {
-			RedisClient.SRem(key, ip)
-			c.Data["json"] = &JSONResponse{Code: 200, Msg: "Cancle Success"}
-		} else {
-			RedisClient.SAdd(key, ip)
-			c.Data["json"] = &JSONResponse{Code: 200, Msg: "Favor Success"}
-		}
+		c.Data["hasNext"] = false
 	}
 
-	c.ServeJSON()
+	c.Data["articles"] = articles
+	c.Data["p"] = p
 }

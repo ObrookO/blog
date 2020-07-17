@@ -1,16 +1,55 @@
 appname =
 httpport =
 runmode =
+app_title =
+
+#xsrf相关
 enablexsrf =
 xsrfexpire =
+
+#session 相关
 sessionon =
 sessionprovider =
 sessionproviderconfig =
 sessionname =
+sessiongcmaxlifetime =
+
+#redis相关
+redis_host =
+redis_password =
+
+#邮件相关
+email_host =
+email_from_name =
+email_from_address =
+email_password =
+manager_email =
+
+#github地址
+github_url =
+
+[dev]
+#项目地址
+app_url =
+#aes相关
+aes_key =
+#数据库相关
 db_host =
 db_name =
 db_user =
 db_password =
-EnableAdmin =
-AdminAddr =
-AdminPort =
+#邮件端口
+email_port =
+
+[prod]
+#项目地址
+app_url =
+#aes相关
+aes_key =
+#数据库相关
+db_host =
+db_name =
+db_user =
+db_password =
+#邮件端口
+email_port =

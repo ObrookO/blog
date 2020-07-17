@@ -3,67 +3,120 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="勤劳的码农">
-    <meta name="description" content="勤劳的码农，分享技术、干货">
+    <meta name="keywords" content="{{or .keywords .appTitle}}">
+    <meta name="description" content="{{.appTitle}}--专注技术分享">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <title>勤劳的码农</title>
-
     <link rel="icon" type="image/png" href="/static/favicon.png">
-    <link rel="stylesheet" href="/css/amazeui.min.css">
-    <link rel="stylesheet" href="/css/app.css">
 
-    {{ .Style }}
+    <title>{{.appTitle}}｜专注技术分享</title>
 
+    {{assets_css "/css/amazeui.min.css"}}
+    {{assets_css "/css/app.css"}}
+
+    <style>
+        textarea {
+            resize: none;
+            overflow: auto;
+        }
+
+        .blog-tag {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .recommend {
+            text-align: left;
+        }
+
+        .back-top {
+            position: fixed;
+            top: 73%;
+            left: 93%;
+        }
+
+        .back-bottom {
+            position: fixed;
+            top: 78%;
+            left: 93%;
+        }
+    </style>
+
+    {{.Style}}
+
+
+    <script>
+        // 百度统计代码
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?2db9907a6825b3b55907a1960e76b584";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
 </head>
 
 <body id="blog">
 
-{{ template "layouts/header.html" . }}
+{{template "layouts/header.html" .}}
 
 <div class="am-g am-g-fixed blog-fixed blog-content">
+    {{.xsrfdata}}
 
-    {{ .LayoutContent }}
-
+    {{.LayoutContent}}
 </div>
 
-{{ template "layouts/footer.html" }}
+{{template "layouts/footer.html" .}}
 
-<script src="/js/jquery.min.js"></script>
-<script src="/js/amazeui.min.js"></script>
+{{assets_js "/js/jquery.min.js"}}
+{{assets_js "/js/amazeui.min.js"}}
+
+{{if .showTB}}
+    <div class="back-top">
+        <a class="am-btn am-btn-default am-circle" href="#header">
+            <i class="am-icon am-icon-arrow-up"></i>
+        </a>
+    </div>
+    <div class="back-bottom">
+        <a class="am-btn am-btn-default am-circle" href="#footer">
+            <i class="am-icon am-icon-arrow-down"></i>
+        </a>
+    </div>
+{{end}}
+
 <script>
+    // 全局token
+    let GToken = $('input[name=_xsrf]').val();
+
     $(function () {
-        // let path = window.location.pathname;
-        //
-        // // 高亮菜单栏
-        // if (path == '/') {
-        //     $('.am-nav').find('a[href="' + path + '"]').parent('li').addClass('am-active');
-        // } else if (path.match(/cate.*?/)) {
-        //     $('.cates').css('color', '#10D07A');
-        // } else if (path.match(/nugget\/c\/.*?/)) {
-        //     $('.nuggets').css('color', '#10D07A');
-        //     $('.blog-sidebar').hide();
-        // } else if (path.match(/tag.*?/)) {
-        //     $('.search-value').hide();
-        //     $('.cates').css('color', '#10D07A');
-        // } else if (path.match(/article.*?/)) {
-        //     $('.search-value').hide();
-        //     $('.cates').css('color', '#10D07A');
-        // } else if (path.match(/nugget\/a\/.*?/)) {
-        //     $('.search-value').hide();
-        //     $('.nuggets').css('color', '#10D07A');
-        //     $('.blog-sidebar').hide();
-        // }
-        //
-        // $('.search-value').on('keyup', function (e) {
-        //     if (e.keyCode == "13") {
-        //         window.location.href = path + '?search=' + $(this).val()
-        //     }
-        // })
+        let path = window.location.pathname;
+
+        // 高亮菜单栏
+        if (path === '/') {
+            $('.am-nav').find('a[href="' + path + '"]').parent('li').addClass('am-active');
+        } else if (path.match(/articles.*?/)) {
+            $('.nav-cates').css('color', '#10D07A');
+        } else if (path.match(/tools.*/)) {
+            $('.nav-tools').css('color', '#10D07A');
+        } else if (path.match(/resource.*/)) {
+            $('.nav-resource').css('color', '#10D07A');
+        }
+
+        $('.search-value').on('keyup', function (e) {
+            if (e.keyCode == "13") {
+                if ($(this).val().length > 0) {
+                    window.location.href = '{{urlfor "ArticleController.Get"}}' + '?search=' + $(this).val();
+                } else {
+                    window.location.href = '{{urlfor "IndexController.Get"}}';
+                }
+            }
+        })
     })
 </script>
 
-{{ .Script }}
+
+{{.Script}}
 
 </body>
 </html>

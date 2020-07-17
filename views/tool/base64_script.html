@@ -1,0 +1,37 @@
+{{assets_js "/js/base64.js"}}
+
+<script>
+    function getResult(obj) {
+        let form = $(obj).parents('form'),
+            rawData = $.trim(form.find('#raw').val()),
+            opt = form.find('input[name=opt]:checked').val();
+
+        form.find('.error').text('');
+
+        if (rawData.length === 0) {
+            form.find('.error').text('请输入原始数据');
+            return;
+        }
+
+        if (opt == 1) {
+            let result = Base64.encode(rawData);
+            form.find('#result').val(result);
+            return;
+        }
+
+        if (opt == 2) {
+            try {
+                let result = Base64.decode(rawData);
+                form.find('#result').val(result);
+            } catch (e) {
+                form.find('#result').val('');
+                form.find('.error').text('操作失败，请检查输入是否正确')
+            }
+
+            return;
+        }
+
+        form.find('#result').val('');
+        form.find('.error').text('请选择正确的操作类型');
+    }
+</script>

@@ -1,0 +1,40 @@
+<div class="am-g am-g-fixed blog-fixed am-u-sm-centered blog-article-margin">
+    <div class="am-u-md-12 am-u-sm-12">
+        <h2 class="am-text-center">BASE64转码</h2>
+        <form class="am-form-horizontal">
+            <div class="am-form-group">
+                <label for="" class="am-form-label am-u-lg-3">原始数据</label>
+                <div class="am-u-lg-6">
+                    <textarea class="am-form-field" id="raw" rows="7"></textarea>
+                </div>
+                <div class="am-u-lg-3"></div>
+            </div>
+            <div class="am-form-group">
+                <label for="" class="am-form-label am-u-lg-3">操作类型</label>
+                <div class="am-u-lg-6">
+                    <label for="" class="am-radio-inline">
+                        <input type="radio" class="am-radio" name="opt" value="1" checked> 编码
+                    </label>
+                    <label for="" class="am-radio-inline">
+                        <input type="radio" class="am-radio" name="opt" value="2"> 解码
+                    </label>
+                </div>
+                <div class="am-u-lg-3"></div>
+            </div>
+            <div class="am-form-group">
+                <label for="" class="am-form-label am-u-lg-3">结果</label>
+                <div class="am-u-lg-6">
+                    <textarea class="am-form-field" id="result" rows="7" readonly></textarea>
+                </div>
+                <div class="am-u-lg-3"></div>
+            </div>
+            <p class="error am-text-danger am-text-center" style="font-weight: bold"></p>
+            <div class="am-form-group">
+                <div class="am-u-lg-12 am-text-center">
+                    <button type="button" class="am-btn am-btn-secondary" onclick="getResult(this)">确定</button>
+                </div>
+                <div class="am-u-lg-3"></div>
+            </div>
+        </form>
+    </div>
+</div>
