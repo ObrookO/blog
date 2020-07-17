@@ -25,8 +25,12 @@ func (c *IndexController) Get() {
 	articles, _ := models.GetAllArticles(filter, offset, articleAmountPerPage)
 
 	// 判断是否存在下一页
-	if models.IsArticleExists(map[string]interface{}{"id__lt": articles[len(articles)-1].Id}) {
-		c.Data["hasNext"] = true
+	if len(articles) > 0 {
+		if models.IsArticleExists(map[string]interface{}{"id__lt": articles[len(articles)-1].Id}) {
+			c.Data["hasNext"] = true
+		} else {
+			c.Data["hasNext"] = false
+		}
 	} else {
 		c.Data["hasNext"] = false
 	}
