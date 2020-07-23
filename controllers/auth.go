@@ -183,10 +183,11 @@ func (c *AuthController) DoRegister() {
 
 	encryptedPassword, _ := utils.AesEncrypt(password, aesKey)
 	if _, err := models.AddAccount(models.Account{
-		Username: username,
-		Email:    email,
-		Password: encryptedPassword,
-		Status:   1,
+		Username:     username,
+		Email:        email,
+		Password:     encryptedPassword,
+		AllowComment: 1,
+		Status:       1,
 	}); err != nil {
 		c.Data["json"] = &JSONResponse{Code: 400007, Msg: "注册失败"}
 		c.ServeJSON()
