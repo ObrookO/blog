@@ -186,6 +186,7 @@ func (c *AuthController) DoRegister() {
 		Username: username,
 		Email:    email,
 		Password: encryptedPassword,
+		Status:   1,
 	}); err != nil {
 		c.Data["json"] = &JSONResponse{Code: 400007, Msg: "注册失败"}
 		c.ServeJSON()
