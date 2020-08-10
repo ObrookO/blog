@@ -141,6 +141,7 @@ func GetOneArticle(filter map[string]interface{}, field ...string) (Article, err
 	err := concatFilter("article", filter).RelatedSel().One(&article, field...)
 
 	o.LoadRelated(&article, "Tags")
+	o.LoadRelated(&article, "Favors")
 	o.LoadRelated(&article, "Comments", true, 1000, 0, "-id")
 
 	return article, err
