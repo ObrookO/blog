@@ -98,11 +98,11 @@ func (c *ArticleController) Favor() {
 		return
 	}
 
-	//if models.IsFavorRecordExists(map[string]interface{}{"article_id": id, "ip": ip}) {
-	//	c.Data["json"] = &JSONResponse{Code: 400001, Msg: "已经点过赞啦"}
-	//	c.ServeJSON()
-	//	return
-	//}
+	if models.IsFavorRecordExists(map[string]interface{}{"article_id": id, "ip": ip}) {
+		c.Data["json"] = &JSONResponse{Code: 400001, Msg: "已经点过赞啦"}
+		c.ServeJSON()
+		return
+	}
 
 	if _, err := models.AddFavorRecord(models.FavorRecord{
 		Article: &models.Article{Id: id},
