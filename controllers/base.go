@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/astaxie/beego/cache"
 	"github.com/astaxie/beego/logs"
 
+	"github.com/astaxie/beego/cache"
 	"github.com/astaxie/beego/utils"
 
 	"html/template"
@@ -39,11 +39,14 @@ var (
 
 func (c *BaseController) Prepare() {
 	// 实例化redis缓存
-	if rcObj, err := getRedisCache(); err != nil {
-		logs.Error("实例化redis缓存失败：%v", err)
-		rc = cache.NewMemoryCache()
-	} else {
-		rc = rcObj
+	if rc == nil {
+		if rcObj, err := getRedisCache(); err != nil {
+			logs.Error("实例化redis缓存失败：%v", err)
+			rc = cache.NewMemoryCache()
+		} else {
+			logs.Info("实例化redis缓存成功")
+			rc = rcObj
+		}
 	}
 
 	aesKey = beego.AppConfig.String("aes_key")
